@@ -33,6 +33,7 @@ export type Tag = {
 function App() {
   const [notes, setNotes] = useLocalStorage<RawNote[]>("NOTES", []);
   const [tags, setTags] = useLocalStorage<Tag[]>("TAGS", []);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const notesWithTags = useMemo(() => {
     return notes.map((note) => {
       return {
@@ -58,7 +59,7 @@ function App() {
   return (
     <Container className="my-4">
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home availableTags={tags} />} />
         <Route
           path="/new"
           element={
