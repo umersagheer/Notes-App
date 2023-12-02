@@ -2,16 +2,34 @@ import { Button, Col, Form, Row, Stack } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ReactSelect from "react-select";
 import { Tag } from "./App";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 type NoteListProps = {
   availableTags: Tag[];
+  notes: simplifiedNote[];
 };
 
-const Home = ({ availableTags }: NoteListProps) => {
+type simplifiedNote = {
+  tags: Tag[];
+  id: string;
+  title: string;
+};
+const Home = ({ availableTags, notes }: NoteListProps) => {
   const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
   const [title, setTitle] = useState("");
 
+  const filteredNotes = useMemo(() => {
+    return notes.filter((note) => {
+      return (
+        title === "" ||
+        (note.title.toLowerCase().includes(title.toLowerCase()) &&
+          (selectedTags.length === 0 ||
+            selectedTags.every((tag) =>
+              note.tags.some((noteTag) => noteTag.id === tag.id)
+            )))
+      );
+    });
+  }, [selectedTags, title, notes]);
   return (
     <>
       <Row className="align-items-center mb-4">
@@ -60,8 +78,21 @@ const Home = ({ availableTags }: NoteListProps) => {
           </Form.Group>
         </Col>
       </Row>
+      <Row xs={1} sm={2} lg={3} xl={4} classname="g-3">
+        {filteredNotes.map((note) => {
+          return (
+            <Col key={note.id}>
+              <NoteCard id={note.id} title={note.title} tags={note.tags} />
+            </Col>
+          );
+        })}
+      </Row>
     </>
   );
 };
+
+function NoteCard({ id, title, tags }: simplifiedNote) {
+  return <h1>Hey</h1>;
+}
 
 export default Home;
